@@ -1,0 +1,34 @@
+config {
+    type: "table",
+    schema: "reporting",
+    tags: ["daily"],
+    bigquery: {
+        partitionBy: "date(created_at)"
+    },
+    description: "Combines posts_questions and posts_answers tables into a single posts_all table",
+    assertions: {
+        uniqueKey: ["post_id"]
+    }
+}
+
+SELECT
+  post_id,
+  created_at,
+  type,
+  title,
+  body,
+  owner_user_id,
+  parent_id
+FROM
+  ${ref("stage_posts_answers")}
+UNION ALL
+SELECT
+  post_id,
+  created_at,
+  type,
+  title,
+  body,
+  owner_user_id,
+  parent_id
+FROM
+  ${ref("stage_posts_questions")}
